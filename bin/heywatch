@@ -1,0 +1,113 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.dirname(__FILE__) + "/../lib"
+require "rubygems"
+require "heywatch"
+
+RestClient.log = "stderr" if ENV["DEBUG"]
+config_file = "#{ENV["HOME"]}/.heywatch"
+
+if File.exists?(config_file)
+  user, passwd = File.read(config_file).split("\n")
+else
+  puts "HeyWatch username:"
+  user = $stdin.gets.chomp
+  puts "HeyWatch password:"
+  system "stty -echo"
+  passwd = $stdin.gets.chomp
+  system "stty echo"
+  
+  # testing credentials
+  begin
+    HeyWatch.new(user, passwd)  
+    File.open(config_file, "w") {|f| f.write("#{user}\n#{passwd}") }
+    File.chmod(0600, config_file)
+    puts "Your credentials have been saved in this file #{config_file} (0600)"
+    exit
+  rescue => e
+    puts "Wrong login or password."
+    exit
+  end
+end
+
+hw = HeyWatch.new(user, passwd)
+
+begin
+  if ARGV.empty?
+    puts %(Usage: #{__FILE__} RESOURCE:METHOD [ID] [parameter1=value1 parameter2=value2 ...]
+
+    Resources:
+
+      account       # account information
+      video         # manage video         | all, info, delete, bin            
+      encoded_video # manage encoded video | all, info, delete, bin, jpg       
+      download      # manage download      | all, info, delete, create         
+      job           # manage job           | all, info, delete, create         
+      format        # manage format        | all, info, delete, create, update 
+    
+    Usage:
+    
+      #{__FILE__} account
+      #{__FILE__} video:info 123456
+			#{__FILE__} job:all
+      #{__FILE__} download:create url=http://site.com/video.mp4 title=mytitle
+      #{__FILE__} encoded_video:jpg 9882322 start=4 > thumb.jpg
+    )
+    exit
+  end
+  
+  if ARGV[0] == "account"
+    puts JSON.pretty_generate(hw.account)
+    exit
+  end
+  
+  resource, method = ARGV[0].split(":")
+  params = ARGV[1..-1]
+
+  $stderr.puts [resource, method, params].inspect if ENV["DEBUG"]
+  
+  if method == "create"
+    params = Hash[*ARGV[1..-1].map{|p| k,v = p.split("=") }.flatten]
+    puts JSON.pretty_generate(hw.send(method, *[resource, params]))
+    exit
+  end
+  
+  if method == "update"
+    params = Hash[*ARGV[2..-1].map{|p| k,v = p.split("=") }.flatten]
+    puts JSON.pretty_generate(hw.send(method, *[resource, ARGV[1], params]))
+    exit
+  end
+  
+  if method == "jpg"
+    params = Hash[*ARGV[2..-1].map{|p| k,v = p.split("=") }.flatten]
+    puts hw.send(method, *[ARGV[1], params])
+    exit
+  end
+
+  if method == "bin"
+    puts hw.send(method, *[resource, ARGV[1]])
+    exit
+  end
+  
+  if params.empty?
+    puts JSON.pretty_generate(hw.send(method, resource))
+    exit
+  end
+  
+  res = hw.send(method, *[resource, params])
+  if res == true
+    puts "ok"
+    exit
+  end
+  
+  if res.empty?
+    exit
+  end
+  
+  puts JSON.pretty_generate(res)
+  exit
+  
+rescue => e
+  puts e
+  puts e.backtrace.join("\n") if ENV["DEBUG"]
+end
