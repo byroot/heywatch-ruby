@@ -26,10 +26,14 @@ class HeyWatch
     JSON.parse(@cli["/account"].get)
   end
 
-  def all(resource)
+  def all(*resource_and_filters)
+    resource, filters = resource_and_filters
     raise_if_invalid_resource resource
-    
-    JSON.parse(@cli["/#{resource}"].get)
+  
+    result = JSON.parse(@cli["/#{resource}"].get)
+    return result if filters.nil?
+
+    return filter_all(result, filters)
   end
   
   def info(resource, id)
@@ -87,6 +91,20 @@ class HeyWatch
   end
   
   private
+  
+  def filter_all(result, filters)
+    if filters.is_a?(Array)
+      filters = Hash[*filters.map{|f| f.split("=") }.flatten]
+    end
+    
+    filtered = []
+    result.each do |r|
+      if eval("true if " + filters.map{|k,v| "'#{r[k.to_s]}' =~ /#{v}/"}.join(" and "))
+        filtered << r
+      end
+    end
+    filtered
+  end
   
   def raise_if_invalid_resource(resource)
     unless VALID_RESOURCES.include?(resource.to_sym)

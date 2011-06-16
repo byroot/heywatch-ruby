@@ -70,6 +70,13 @@ For more information:
 	# get information about a specific video
 	hw.info :video, 9662090
 
+### Filter results ###
+
+The filters are only available in HeyWatch#all method.
+
+	# Will only return formats that I've created and with the video codec h264
+	hw.all :format, :owner => true, :video_codec => "h264"
+	
 ### Create a download ###
 
 	hw.create :download, :url => "http://site.com/yourvideo.mp4", :title => "yourtitle"
@@ -163,6 +170,7 @@ For more information:
 	      heywatch job:all
 	      heywatch download:create url=http://site.com/video.mp4 title=mytitle
 	      heywatch encoded_video:jpg 9882322 start=4 > thumb.jpg
+				heywatch format:all owner=true video_codec=h264
 
 
 Released under the [MIT license](http://www.opensource.org/licenses/mit-license.php).
