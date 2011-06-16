@@ -5,7 +5,6 @@ class HeyWatch
   class InvalidResource < ArgumentError; end
   class BadRequest < RuntimeError; end
   
-  VALID_RESOURCES = [:video, :encoded_video, :job, :download, :format]
   URL = "https://heywatch.com"
   VERSION = "1.0.0"
   
@@ -28,7 +27,6 @@ class HeyWatch
 
   def all(*resource_and_filters)
     resource, filters = resource_and_filters
-    raise_if_invalid_resource resource
   
     result = JSON.parse(@cli["/#{resource}"].get)
     return result if filters.nil? or filters.empty?
@@ -37,8 +35,6 @@ class HeyWatch
   end
   
   def info(resource, id)
-    raise_if_invalid_resource resource
-    
     JSON.parse(@cli["/#{resource}/#{id}"].get)
   end
   
@@ -66,17 +62,13 @@ class HeyWatch
     raise BadRequest, e.http_body
   end
   
-  def create(resource, data={})
-    raise_if_invalid_resource resource
-    
+  def create(resource, data={}) 
     JSON.parse(@cli["/#{resource}"].post(data))
   rescue RestClient::BadRequest=> e
     raise BadRequest, e.http_body
   end
   
   def update(resource, id, data={})
-    raise_if_invalid_resource resource
-    
     @cli["/#{resource}/#{id}"].put(data)
     info(resource, id)
   rescue RestClient::BadRequest=> e
@@ -84,8 +76,6 @@ class HeyWatch
   end
   
   def delete(resource, id)
-    raise_if_invalid_resource resource
-    
     @cli["/#{resource}/#{id}"].delete
     true
   end
@@ -104,11 +94,5 @@ class HeyWatch
       end
     end
     filtered
-  end
-  
-  def raise_if_invalid_resource(resource)
-    unless VALID_RESOURCES.include?(resource.to_sym)
-      raise InvalidResource, "Can't find resource '#{resource}'"
-    end
   end
 end

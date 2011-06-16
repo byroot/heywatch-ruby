@@ -49,7 +49,7 @@ begin
     
       #{__FILE__} account
       #{__FILE__} video:info 123456
-			#{__FILE__} job:all
+      #{__FILE__} job:all
       #{__FILE__} download:create url=http://site.com/video.mp4 title=mytitle
       #{__FILE__} encoded_video:jpg 9882322 start=4 > thumb.jpg
       #{__FILE__} format:all owner=true video_codec=h264
