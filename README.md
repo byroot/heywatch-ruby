@@ -171,6 +171,8 @@ The filters are only available in HeyWatch#all method.
 	      heywatch download:create url=http://site.com/video.mp4 title=mytitle
 	      heywatch encoded_video:jpg 9882322 start=4 > thumb.jpg
 	      heywatch format:all owner=true video_codec=h264
+	      heywatch video:all "[0]"
+	      heywatch job:all "[0..10]"
 
 
 Released under the [MIT license](http://www.opensource.org/licenses/mit-license.php).

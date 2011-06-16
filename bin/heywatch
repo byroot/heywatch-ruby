@@ -53,6 +53,8 @@ begin
       #{__FILE__} download:create url=http://site.com/video.mp4 title=mytitle
       #{__FILE__} encoded_video:jpg 9882322 start=4 > thumb.jpg
       #{__FILE__} format:all owner=true video_codec=h264
+      #{__FILE__} video:all "[0]"
+      #{__FILE__} job:all "[0..10]"
     )
     exit
   end
@@ -95,6 +97,11 @@ begin
     exit
   end
   
+  if params.last =~ /\[([0-9\.-]+)\]/
+    offset = eval($1)
+    params = params[0..-2]
+  end
+
   res = hw.send(method, *[resource, params])
   if res == true
     puts "ok"
@@ -105,6 +112,7 @@ begin
     exit
   end
   
+  res = res[offset] if offset
   puts JSON.pretty_generate(res)
   exit
   

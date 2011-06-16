@@ -31,7 +31,7 @@ class HeyWatch
     raise_if_invalid_resource resource
   
     result = JSON.parse(@cli["/#{resource}"].get)
-    return result if filters.nil?
+    return result if filters.nil? or filters.empty?
 
     return filter_all(result, filters)
   end
