@@ -118,7 +118,13 @@ For more information:
 	  "status": "pending",
 	  "http_upload_directive": null
 	}
+	
+### Delete a video ###
 
+	hw.delete :video, 9662090
+	
+	➔ true
+	
 ### Generating thumbnails ###
 
 	# Will return the binary data directly
@@ -134,6 +140,7 @@ For more information:
 ### Errors ###
 
 	hw.create :download, :url => "not_a_valid_url"
+	
 	➔ HeyWatch::BadRequest: {"message":"Url is invalid"}
 
 ## Command-line CLI ##
@@ -153,7 +160,7 @@ For more information:
     
 	      heywatch account
 	      heywatch video:info 123456
-				heywatch job:all
+	      heywatch job:all
 	      heywatch download:create url=http://site.com/video.mp4 title=mytitle
 	      heywatch encoded_video:jpg 9882322 start=4 > thumb.jpg
 
