@@ -157,11 +157,11 @@ The filters are only available in HeyWatch#all method.
 	    Resources:
 
 	      account       # account information
-	      video         # manage video         | all, info, delete, bin            
-	      encoded_video # manage encoded video | all, info, delete, bin, jpg       
-	      download      # manage download      | all, info, delete, create         
-	      job           # manage job           | all, info, delete, create         
-	      format        # manage format        | all, info, delete, create, update 
+	      video         # manage video         | all, info, delete, count, bin            
+	      encoded_video # manage encoded video | all, info, delete, count, bin, jpg       
+	      download      # manage download      | all, info, delete, count, create         
+	      job           # manage job           | all, info, delete, count, create         
+	      format        # manage format        | all, info, delete, count, create, update 
     
 	    Usage:
     
@@ -173,6 +173,7 @@ The filters are only available in HeyWatch#all method.
 	      heywatch format:all owner=true video_codec=h264
 	      heywatch video:all "[0]"
 	      heywatch job:all "[0..10]"
+	      heywatch format:count owner=true
 
 
 Released under the [MIT license](http://www.opensource.org/licenses/mit-license.php).

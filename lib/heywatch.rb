@@ -38,6 +38,10 @@ class HeyWatch
     JSON.parse(@cli["/#{resource}/#{id}"].get)
   end
   
+  def count(*resource_and_filters)
+    all(*resource_and_filters).size
+  end
+  
   def bin(resource, id, &block)
     unless [:encoded_video, :video].include?(resource.to_sym)
       raise InvalidResource, "Can't retrieve '#{resource}'"

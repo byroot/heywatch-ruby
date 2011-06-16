@@ -39,11 +39,11 @@ begin
     Resources:
 
       account       # account information
-      video         # manage video         | all, info, delete, bin            
-      encoded_video # manage encoded video | all, info, delete, bin, jpg       
-      download      # manage download      | all, info, delete, create         
-      job           # manage job           | all, info, delete, create         
-      format        # manage format        | all, info, delete, create, update 
+      video         # manage video         | all, info, delete, count, bin            
+      encoded_video # manage encoded video | all, info, delete, count, bin, jpg       
+      download      # manage download      | all, info, delete, count, create         
+      job           # manage job           | all, info, delete, count, create         
+      format        # manage format        | all, info, delete, count, create, update 
     
     Usage:
     
@@ -55,6 +55,7 @@ begin
       #{__FILE__} format:all owner=true video_codec=h264
       #{__FILE__} video:all "[0]"
       #{__FILE__} job:all "[0..10]"
+      #{__FILE__} format:count owner=true
     )
     exit
   end
@@ -93,7 +94,13 @@ begin
   end
   
   if params.empty?
-    puts JSON.pretty_generate(hw.send(method, resource))
+    res = hw.send(method, resource)
+    if method == "count"
+      puts res
+      exit
+    end
+    
+    puts JSON.pretty_generate(res)
     exit
   end
   
@@ -108,11 +115,17 @@ begin
     exit
   end
   
+  if res.is_a?(Fixnum)
+    puts res
+    exit
+  end
+  
   if res.empty?
     exit
   end
   
   res = res[offset] if offset
+  
   puts JSON.pretty_generate(res)
   exit
   
