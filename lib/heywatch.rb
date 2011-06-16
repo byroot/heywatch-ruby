@@ -13,7 +13,7 @@ class HeyWatch
   
   def initialize(user, password)
     @cli = RestClient::Resource.new(URL, {:user => user, :password => password, :headers =>
-      {:client => "HeyWatch Ruby #{VERSION}"}})
+      {:user_agent => "HeyWatch Ruby/#{VERSION}", :accept => "application/json"}})
       
     self
   end
@@ -23,19 +23,19 @@ class HeyWatch
   end
   
   def account
-    JSON.parse(@cli["/account.json"].get)
+    JSON.parse(@cli["/account"].get)
   end
 
   def all(resource)
     raise_if_invalid_resource resource
     
-    JSON.parse(@cli["/#{resource}.json"].get)
+    JSON.parse(@cli["/#{resource}"].get)
   end
   
   def info(resource, id)
     raise_if_invalid_resource resource
     
-    JSON.parse(@cli["/#{resource}/#{id}.json"].get)
+    JSON.parse(@cli["/#{resource}/#{id}"].get)
   end
   
   def bin(resource, id, &block)
@@ -50,7 +50,7 @@ class HeyWatch
   
   def jpg(id, params={})
     if params.delete(:async) or params.delete("async")
-      @cli["/encoded_video/#{id}/thumbnails.json"].post(params)
+      @cli["/encoded_video/#{id}/thumbnails"].post(params)
       return true
     end
     
@@ -65,7 +65,7 @@ class HeyWatch
   def create(resource, data={})
     raise_if_invalid_resource resource
     
-    JSON.parse(@cli["/#{resource}.json"].post(data))
+    JSON.parse(@cli["/#{resource}"].post(data))
   rescue RestClient::BadRequest=> e
     raise BadRequest, e.http_body
   end
@@ -73,7 +73,7 @@ class HeyWatch
   def update(resource, id, data={})
     raise_if_invalid_resource resource
     
-    @cli["/#{resource}/#{id}.json"].put(data)
+    @cli["/#{resource}/#{id}"].put(data)
     info(resource, id)
   rescue RestClient::BadRequest=> e
     raise BadRequest, e.http_body
@@ -82,7 +82,7 @@ class HeyWatch
   def delete(resource, id)
     raise_if_invalid_resource resource
     
-    @cli["/#{resource}/#{id}.json"].delete
+    @cli["/#{resource}/#{id}"].delete
     true
   end
   
