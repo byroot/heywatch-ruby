@@ -11,6 +11,10 @@ For more information:
 * Contact: [heywatch at particle-s.com](mailto:heywatch at particle-s.com)
 * Twitter: [@particles](http://twitter.com/particles) / [@sadikzzz](http://twitter.com/sadikzzz)
 
+## Install ##
+
+	sudo gem install heywatch
+	
 ## Usage ##
 
 	require "heywatch"
