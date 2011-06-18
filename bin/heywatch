@@ -34,7 +34,7 @@ hw = HeyWatch.new(user, passwd)
 
 begin
   if ARGV.empty?
-    puts %(Usage: #{__FILE__} RESOURCE:METHOD [ID] [parameter1=value1 parameter2=value2 ...]
+    puts %(Usage: heywatch RESOURCE:METHOD [ID] [parameter1=value1 parameter2=value2 ...]
 
     Resources:
 
@@ -47,15 +47,15 @@ begin
     
     Usage:
     
-      #{__FILE__} account
-      #{__FILE__} video:info 123456
-      #{__FILE__} job:all
-      #{__FILE__} download:create url=http://site.com/video.mp4 title=mytitle
-      #{__FILE__} encoded_video:jpg 9882322 start=4 > thumb.jpg
-      #{__FILE__} format:all owner=true video_codec=h264
-      #{__FILE__} video:all "[0]"
-      #{__FILE__} job:all "[0..10]"
-      #{__FILE__} format:count owner=true
+      heywatch account
+      heywatch video:info 123456
+      heywatch job:all
+      heywatch download:create url=http://site.com/video.mp4 title=mytitle
+      heywatch encoded_video:jpg 9882322 start=4 > thumb.jpg
+      heywatch format:all owner=true video_codec=h264
+      heywatch video:all "[0]"
+      heywatch job:all "[0..10]"
+      heywatch format:count owner=true
     )
     exit
   end
