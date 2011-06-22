@@ -14,7 +14,7 @@ For more information:
 ## Install ##
 
 	sudo gem install heywatch
-	
+
 ## Usage ##
 
 	require "heywatch"
@@ -160,16 +160,17 @@ The filters are only available in HeyWatch#all method.
 
 	    Resources:
 
-	      account       # account information
+	      account       # manage account       | create, update
 	      video         # manage video         | all, info, delete, count, bin            
 	      encoded_video # manage encoded video | all, info, delete, count, bin, jpg       
 	      download      # manage download      | all, info, delete, count, create         
 	      job           # manage job           | all, info, delete, count, create         
 	      format        # manage format        | all, info, delete, count, create, update 
-    
+
 	    Usage:
-    
+
 	      heywatch account
+	      heywatch account:update env=sandbox
 	      heywatch video:info 123456
 	      heywatch job:all
 	      heywatch download:create url=http://site.com/video.mp4 title=mytitle

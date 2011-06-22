@@ -66,7 +66,7 @@ begin
 
     Resources:
 
-      account       # manage account
+      account       # manage account       | create, update
       video         # manage video         | all, info, delete, count, bin            
       encoded_video # manage encoded video | all, info, delete, count, bin, jpg       
       download      # manage download      | all, info, delete, count, create         
