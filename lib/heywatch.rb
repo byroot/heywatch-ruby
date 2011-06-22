@@ -6,7 +6,7 @@ class HeyWatch
   class BadRequest < RuntimeError; end
   
   URL = "https://heywatch.com"
-  VERSION = "1.0.2"
+  VERSION = "1.0.3"
   
   attr_reader :cli
   
@@ -109,7 +109,7 @@ class HeyWatch
   # hw.update :format, 9877, :video_bitrate => 890
   def update(resource, id, data={})
     @cli["/#{resource}/#{id}"].put(data)
-    info(resource, id)
+    true
   rescue RestClient::BadRequest=> e
     raise BadRequest, e.http_body
   end
