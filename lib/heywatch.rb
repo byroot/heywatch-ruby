@@ -20,6 +20,14 @@ class HeyWatch
     self
   end
   
+  def self.register(data={})
+    cli = RestClient::Resource.new(URL, {:headers =>
+      {:user_agent => "HeyWatch Ruby/#{VERSION}", :accept => "application/json"}})
+    JSON.parse(cli["/account"].post(data))
+  rescue RestClient::BadRequest=> e
+    raise BadRequest, e.http_body
+  end
+  
   def inspect # :nodoc:
     "#<HeyWatch: " + account.inspect + ">"
   end
@@ -104,10 +112,16 @@ class HeyWatch
     raise BadRequest, e.http_body
   end
   
-  # Update an object by giving its resource and ID
+  # Update an object by giving its resource and ID (except account)
   #
   # hw.update :format, 9877, :video_bitrate => 890
-  def update(resource, id, data={})
+  def update(resource, *params)
+    if resource.to_sym == :account
+      @cli["/#{resource}"].put(params[0])
+      return true
+    end
+
+    id, data = params
     @cli["/#{resource}/#{id}"].put(data)
     true
   rescue RestClient::BadRequest=> e

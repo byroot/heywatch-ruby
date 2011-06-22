@@ -10,20 +10,48 @@ config_file = "#{ENV["HOME"]}/.heywatch"
 if File.exists?(config_file)
   user, passwd = File.read(config_file).split("\n")
 else
-  puts "HeyWatch username:"
-  user = $stdin.gets.chomp
-  puts "HeyWatch password:"
-  system "stty -echo"
-  passwd = $stdin.gets.chomp
-  system "stty echo"
+  print "Do you want to create an HeyWatch account? (Y/n) "
+  if $stdin.gets.chomp.downcase == "y"
+    data = {}
+    [:firstname, :lastname, :email, :login].each do |f|
+      print "#{f}: ".capitalize
+      data[f] = $stdin.gets.chomp
+    end
+  
+    [:password, :password_confirmation].each do |f|
+      print "#{f}: ".capitalize.gsub("_", " ")
+      system "stty -echo"      
+      data[f] = $stdin.gets.chomp
+      system "stty echo"
+      puts
+    end
+
+    print "Is the information correct? (Y/n) "
+    exit if $stdin.gets.chomp.downcase != "y"
+  
+    begin
+      HeyWatch.register(data)
+      user, passwd = data[:login], data[:password]
+    rescue => e
+      puts e
+      exit
+    end
+  else
+    print "HeyWatch username: "
+    user = $stdin.gets.chomp
+    print "HeyWatch password: "
+    system "stty -echo"
+    passwd = $stdin.gets.chomp
+    system "stty echo"
+    puts
+  end
   
   # testing credentials
   begin
     HeyWatch.new(user, passwd)  
     File.open(config_file, "w") {|f| f.write("#{user}\n#{passwd}") }
     File.chmod(0600, config_file)
-    puts "Your credentials have been saved in this file #{config_file} (0600)"
-    exit
+    puts "Your credentials have been saved in this file #{config_file} (0600)\n-----\n"
   rescue => e
     puts "Wrong login or password."
     exit
@@ -38,7 +66,7 @@ begin
 
     Resources:
 
-      account       # account information
+      account       # manage account
       video         # manage video         | all, info, delete, count, bin            
       encoded_video # manage encoded video | all, info, delete, count, bin, jpg       
       download      # manage download      | all, info, delete, count, create         
@@ -48,6 +76,7 @@ begin
     Usage:
     
       heywatch account
+      heywatch account:update env=sandbox
       heywatch video:info 123456
       heywatch job:all
       heywatch download:create url=http://site.com/video.mp4 title=mytitle
@@ -60,7 +89,7 @@ begin
     exit
   end
   
-  if ARGV[0] == "account"
+  if ARGV.size == 1 and ARGV[0] == "account"
     puts JSON.pretty_generate(hw.account)
     exit
   end
@@ -72,13 +101,20 @@ begin
   
   if method == "create"
     params = Hash[*ARGV[1..-1].map{|p| k,v = p.split("=") }.flatten]
-    puts JSON.pretty_generate(hw.send(method, *[resource, params]))
+    
+    if resource == "account"
+      puts JSON.pretty_generate(HeyWatch.register(params))
+    else
+      puts JSON.pretty_generate(hw.send(method, *[resource, params]))
+    end
     exit
   end
   
   if method == "update"
     params = Hash[*ARGV[2..-1].map{|p| k,v = p.split("=") }.flatten]
-    puts JSON.pretty_generate(hw.send(method, *[resource, ARGV[1], params]))
+    
+    hw.send(method, *[resource, ARGV[1], params])
+    puts "ok"
     exit
   end
   
