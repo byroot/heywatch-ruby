@@ -140,10 +140,14 @@ class HeyWatch
   
   def filter_all(results, filters) # :nodoc:
     filters = filters.map{ |f| f.split('=') } if filters.is_a?(Array)
-    filters = Hash[filters.map{ |k, v| [k.to_s, Regexp.new(v.to_s)] }]
     
     results.select do |result|
-      filters.all?{ |key, matcher| result[key].to_s =~ matcher }
+      filters.all?{ |key, matcher| matcher === result[key.to_s] }
     end
   end
+  
+  def hash_pluck(hash, key)
+    key.to_s.split('.').inject(hash){ |hash, key| hash[key] }
+  end
+  
 end
