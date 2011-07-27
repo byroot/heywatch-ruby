@@ -138,17 +138,12 @@ class HeyWatch
   
   private
   
-  def filter_all(result, filters) # :nodoc:
-    if filters.is_a?(Array)
-      filters = Hash[*filters.map{|f| f.split("=") }.flatten]
-    end
+  def filter_all(results, filters) # :nodoc:
+    filters = filters.map{ |f| f.split('=') } if filters.is_a?(Array)
+    filters = Hash[filters.map{ |k, v| [k.to_s, Regexp.new(v.to_s)] }]
     
-    filtered = []
-    result.each do |r|
-      if eval("true if " + filters.map{|k,v| "'#{r[k.to_s]}' =~ /#{v}/"}.join(" and "))
-        filtered << r
-      end
+    results.select do |result|
+      filters.all?{ |key, matcher| result[key].to_s =~ matcher }
     end
-    filtered
   end
 end
